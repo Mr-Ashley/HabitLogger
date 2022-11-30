@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,8 +36,10 @@ namespace HabitLogger
                 switch (userInput)
                 {
                     case "0":
+                        GetAllRecords();
                         break;
                     case "1":
+                        Insert();
                         break;
                     case "2":
                         break;
@@ -49,6 +52,51 @@ namespace HabitLogger
                     default:
                         break;
                 }
+            }
+        }
+
+        public static void GetAllRecords()
+        {
+            Console.Clear();
+            using(var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+
+                tableCmd.CommandText = $"SELECT * FROM drink_water";
+
+                List<drinkWater> tableData = new();
+
+                SqliteDataReader reader = tableCmd.ExecuteReader();
+
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        tableData.Add(
+                        new drinkWater
+                        {
+                            Id = reader.GetInt32(0),
+                            Date = DateTime.ParseExact(reader.GetString(1), "dd-MM-yy", new CultureInfo("en-UK")),
+                            Quantity = reader.GetInt32(2)
+                        });
+                        
+                        
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No rows Found");
+                }
+                connection.Close();
+
+                Console.WriteLine("--------------------------\n");
+
+                foreach(var dw in tableData)
+                {
+                    Console.WriteLine($"{dw.Id} - {dw.Date.ToString("dd-MM-yy")} - Quantity: {dw.Quantity}");
+                }
+                Console.WriteLine("--------------------------\n");
             }
         }
 
