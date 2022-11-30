@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Data.Sqlite;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace HabitLogger
 {
+
     public class Utils
     {
-        public static void getUserInput()
+        static string connectionString = @"Data Source=habitLogger.db";
+
+        public static void GetUserInput()
         {
             Console.Clear();
             bool endApp = false;
@@ -39,6 +43,8 @@ namespace HabitLogger
                     case "3":
                         break;
                     case "4":
+                        Console.WriteLine("\nThank you for using Habit Logger!");
+                        endApp = true; 
                         break;
                     default:
                         break;
@@ -46,6 +52,46 @@ namespace HabitLogger
             }
         }
 
+        public static void Insert()
+        {
+            string date = GetDateInput();
+
+            int quantity = GetNumberInput("\n\nPlease insert number of glasses or other measure of your choice(no decimals allowed)\n\n");
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+                tableCmd.CommandText = $"INSERT INTO drink_water(date,quantity) VALUES ('{date}','{quantity}')";
+
+                tableCmd.ExecuteNonQuery();
+                connection.Close(); 
+            }
+        }
+
+        public static int GetNumberInput(string message)
+        {
+            Console.WriteLine(message);
+
+            string numberInput = Console.ReadLine();
+
+            if (numberInput == "0") GetUserInput();
+
+            int finalInput = Convert.ToInt32(numberInput);
+
+            return finalInput;
+        }
+
+        public static string GetDateInput()
+        {
+            Console.WriteLine("\n\nPlease Insert the date: (format: dd-mm-yy). Type 4 to return to main menu");
+
+            string dateInput = Console.ReadLine();
+
+            if (dateInput == "0") GetUserInput();
+
+            return dateInput;
+        }
     }
 }
 
