@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.Sqlite;
+using Microsoft.VisualBasic.FileIO;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -36,18 +37,20 @@ namespace HabitLogger
                 switch (userInput)
                 {
                     case "0":
-                        GetAllRecords();
+                        Console.WriteLine("\nThank you for using Habit Logger!");
+                        endApp = true;
                         break;
                     case "1":
-                        Insert();
+                        GetAllRecords();
                         break;
                     case "2":
+                        Insert();
                         break;
                     case "3":
+                        Delete();
                         break;
                     case "4":
-                        Console.WriteLine("\nThank you for using Habit Logger!");
-                        endApp = true; 
+                         
                         break;
                     default:
                         break;
@@ -140,7 +143,34 @@ namespace HabitLogger
 
             return dateInput;
         }
+
+        public static void Delete()
+        {
+            Console.Clear();
+            GetAllRecords();
+
+            var recordId = GetNumberInput("\n\nPlease type the Id of the record you want to delete or type 4 to go back to main menu");
+
+            using(var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var tableCmd = connection.CreateCommand();
+                tableCmd.CommandText = $"DELETE FROM drink_water WHERE Id = '{recordId}'";
+
+                int rowCount = tableCmd.ExecuteNonQuery();
+
+                if(rowCount == 0)
+                {
+                    Console.WriteLine($"\n\nRecord with Id {recordId} doesn't exist\n\n");
+                    Delete();
+                }
+            }
+
+            Console.WriteLine($"\n\nRecord with Id {recordId} was deleted");
+            GetUserInput();
+        }
     }
+    
 }
 
 
