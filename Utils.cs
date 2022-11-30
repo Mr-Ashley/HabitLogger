@@ -13,6 +13,7 @@ namespace HabitLogger
     public class Utils
     {
         static string connectionString = @"Data Source=habitLogger.db";
+        
 
         public static void GetUserInput()
         {
@@ -50,9 +51,10 @@ namespace HabitLogger
                         Delete();
                         break;
                     case "4":
-                         
+                        Update();
                         break;
                     default:
+                        Console.WriteLine("\nInvalid Command. Please type a number from 0 - 4.\n");
                         break;
                 }
             }
@@ -168,6 +170,40 @@ namespace HabitLogger
 
             Console.WriteLine($"\n\nRecord with Id {recordId} was deleted");
             GetUserInput();
+        }
+
+        public static void Update()
+        {
+            GetAllRecords();
+
+            var recordId = GetNumberInput("\n\nPlease type the Id of the record you want to delete or type 4 to go back to main menu");
+            string date = GetDateInput();
+
+            using (var connection = new SqliteConnection(connectionString))
+            {
+                connection.Open();
+                var checkCmd = connection.CreateCommand();
+                checkCmd.CommandText = $"SELECT EXISTS(SELECT 1 FROM drink_water WHERE Id = {recordId})";
+                int checkQuery = Convert.ToInt32(checkCmd.ExecuteScalar());
+
+                if(checkQuery == 0)
+                {
+                    Console.WriteLine($"\n\nRecord with Id {recordId} doesn't exist");
+                    connection.Close();
+                    Update();
+                }
+                string Date = GetDateInput();
+
+                int quantity = GetNumberInput("\n\nPlease insert number of glasses or other measure of your choice(no decimals allowed)");
+
+                var tableCmd = connection.CreateCommand();
+                tableCmd.CommandText = $"UPDATE drink_water SET date = '{date}', quantity = {quantity} WHERE Id = {recordId}";
+
+                tableCmd.ExecuteNonQuery();
+
+                connection.Close();
+            }
+           
         }
     }
     
