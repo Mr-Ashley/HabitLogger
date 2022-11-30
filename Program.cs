@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using HabitLogger;
+using Microsoft.Data.Sqlite;
 
 string connectionString = @"Data Source=habitLogger.db";
 
@@ -16,3 +17,4 @@ using (var connection = new SqliteConnection(connectionString))
 
     connection.Close();
 }
+//Utils.getUserInput();
