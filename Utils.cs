@@ -13,7 +13,6 @@ namespace HabitLogger
     public class Utils
     {
         static string connectionString = @"Data Source=habitLogger.db";
-        
 
         public static void GetUserInput()
         {
@@ -25,11 +24,11 @@ namespace HabitLogger
                 Console.WriteLine("MAIN MENU\n");
                 Console.WriteLine("What would you like to do?\n");
 
-                Console.WriteLine("Type 0 to View All Records");
-                Console.WriteLine("Type 1 Insert Record");
-                Console.WriteLine("Type 2 Delete Record");
-                Console.WriteLine("Type 3 to Update Record");
-                Console.WriteLine("Type 4 to Close Application\n");
+                Console.WriteLine("Type 0 to Close Application");
+                Console.WriteLine("Type 1 To Get All Records");
+                Console.WriteLine("Type 2 to Insert New Record");
+                Console.WriteLine("Type 3 to Delete Record");
+                Console.WriteLine("Type 4 to Update Record\n");
 
                 Console.WriteLine("-----------------------------");
 
@@ -40,6 +39,7 @@ namespace HabitLogger
                     case "0":
                         Console.WriteLine("\nThank you for using Habit Logger!");
                         endApp = true;
+                        Environment.Exit(0);
                         break;
                     case "1":
                         GetAllRecords();
@@ -82,9 +82,9 @@ namespace HabitLogger
                         new drinkWater
                         {
                             Id = reader.GetInt32(0),
-                            Date = DateTime.ParseExact(reader.GetString(1), "dd-MM-yy", new CultureInfo("en-UK")),
+                            Date = DateTime.ParseExact(reader.GetString(1), "dd-mm-yy", new CultureInfo("en-US")),
                             Quantity = reader.GetInt32(2)
-                        });
+                        }); ;
                         
                         
                     }
@@ -129,6 +129,11 @@ namespace HabitLogger
             string numberInput = Console.ReadLine();
 
             if (numberInput == "0") GetUserInput();
+            while (!Int32.TryParse(numberInput, out _) || Convert.ToInt32(numberInput) < 0)
+            {
+                Console.WriteLine("\n\nInvalid number. Try again.\n\n");
+               numberInput = Console.ReadLine();
+            }
 
             int finalInput = Convert.ToInt32(numberInput);
 
@@ -142,6 +147,12 @@ namespace HabitLogger
             string dateInput = Console.ReadLine();
 
             if (dateInput == "0") GetUserInput();
+
+            while(!DateTime.TryParseExact(dateInput,"dd-MM-yy", new CultureInfo("en-US"), DateTimeStyles.None, out _))
+            {
+                Console.WriteLine("\n\nInvalid date. (format: dd-MM-yy). Type 0 to return to main menu or try again:\n\n");
+                dateInput = Console.ReadLine();
+            }
 
             return dateInput;
         }
